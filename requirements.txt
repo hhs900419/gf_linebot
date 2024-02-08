@@ -9,3 +9,4 @@ emoji
 pyshorteners
 scipy
 openai
+google-generativeai
