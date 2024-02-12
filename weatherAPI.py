@@ -11,8 +11,8 @@ class WeatherAPI:
     def __init__(self):
         # self.api_key = os.getenv("ACCUWEATHER_API_KEY_2", None)
         self.api_key = os.getenv("ACCUWEATHER_API_KEY", None)
-        # self.location_key = None
-        self.location_key = 2516935
+        self.location_key = None
+        # self.location_key = 2516935
         self.location = None
         self.country_code = "TW"
         self.language = "zh-tw"
@@ -172,9 +172,9 @@ class WeatherAPI:
                 img_url = None
                 title = "天氣小助手"
                 description = f"妳的位置: {self.location}"
-                description += f"location key: {self.location_key}"
-                label_list = ["設定地點", "目前天氣", "天氣預報 (小時)", "天氣預報 (日)"]
-                text_list = ["設定地點", "目前天氣", "天氣預報 (小時)", "天氣預報 (日)"]
+                # description += f"location key: {self.location_key}"
+                label_list = ["設定地點", "目前天氣", "天氣預報 (12小時)", "天氣預報 (5日)"]
+                text_list = ["設定地點", "目前天氣", "天氣預報 (12小時)", "天氣預報 (5日)"]
                 reply_ButtonsTemplate(token, title, description, label_list, text_list)
                 self.GET_LOCATION_INFO = False
             else:
