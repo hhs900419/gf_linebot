@@ -43,6 +43,7 @@ def reply_ButtonsTemplate(reply_token, title, description, label_list, text_list
         alt_text = 'Buttons template',
         template = ButtonsTemplate(
             thumbnail_image_url = img_url,
+            imageSize = "contain",
             title = title,
             text = description,
             actions = button_actions
@@ -51,28 +52,11 @@ def reply_ButtonsTemplate(reply_token, title, description, label_list, text_list
     line_bot_api.reply_message(reply_token, message)
     return
 
-def reply_ImgCarouselTemplate(reply_token):
+def reply_ImgCarouselTemplate(reply_token, img_cols):
     image_carousel_template_message = TemplateSendMessage(
         alt_text='ImageCarousel template',
         template=ImageCarouselTemplate(
-            columns=[
-                ImageCarouselColumn(
-                    image_url='https://example.com/item1.jpg',
-                    action=PostbackAction(
-                        label='postback1',
-                        display_text='postback text1',
-                        data='action=buy&itemid=1'
-                    )
-                ),
-                ImageCarouselColumn(
-                    image_url='https://example.com/item2.jpg',
-                    action=PostbackAction(
-                        label='postback2',
-                        display_text='postback text2',
-                        data='action=buy&itemid=2'
-                    )
-                )
-            ]
+            columns=img_cols
         )
     )
     line_bot_api.reply_message(reply_token, image_carousel_template_message)

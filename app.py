@@ -14,14 +14,11 @@ from gemini import *
 from utils import *
 from reply import *
 from weatherAPI import *
+from love import *
 
 
-
-
-# get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv("LINE_CHANNEL_SECRET", None)
 channel_access_token = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", None)
-# google_api_key = os.getenv("GOOGLE_API_KEY", None)
 
 if channel_secret is None:
     print("Specify LINE_CHANNEL_SECRET as environment variable.")
@@ -29,27 +26,21 @@ if channel_secret is None:
 if channel_access_token is None:
     print("Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.")
     sys.exit(1)
-# if google_api_key is None:
-#     print("Specify GOOGLE_API_KEY as environment variable.")
-#     sys.exit(1)
-
-
-
-# genai.configure(api_key=google_api_key)
+    
+    
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
-
-
 
 app = Flask(__name__)
 gemini = Gemini()
 weatherAPI = WeatherAPI()
-# model = genai.GenerativeModel('gemini-pro')
+love = Love()
 
 state_dict = {
     "NORMAL_STATE" : True,
     "AI_STATE" : False,
-    "WEATHER_STATE" : False
+    "WEATHER_STATE" : False, 
+    "LOVE_STATE": False,
 }
 
 
@@ -75,38 +66,29 @@ def handle_message(event):
     elif trigger_weather(event, text, state_dict, weatherAPI):
         state_controller(state_dict, "WEATHER_STATE")
         return
+    elif trigger_love(event, text):
+        state_controller(state_dict, "LOVE_STATE")
+        return
     elif trigger_reset(event, text):
         state_reset(state_dict)
     elif text.lower() == "state":
         reply_text = get_current_state(state_dict)
     else:
-        reply_text = "You said: " + text
+        reply_text = "寶貝說: " + text
         
     # State specific task
     if get_current_state(state_dict) == "AI_STATE":
         response = gemini.get_response(event, text)
         return
-        # messages = [
-        #     {'role':'user',
-        #     'parts': [text]}
-        # ]
-        # response = model.generate_content(messages, stream=True)
-        # # chat = model.start_chat(history=[])
-        # # response = chat.send_message(text, stream=True, 
-        # #                             generation_config=genai.types.GenerationConfig(
-        # #                                 max_output_tokens=1000,
-        # #                                 temperature=1.0))
-        # response.resolve()
-        # reply_text = format_response(response.text)
-        
+    
     elif get_current_state(state_dict) == "WEATHER_STATE":
         weatherAPI.controller(event, text)
         return
-        # if weatherAPI.location_key == None:
-        #     weatherAPI.get_location_key_by_text(text)
-        # else:
-        #     weatherAPI.current_weather()
-        # reply_text = "i am weather assistant. please share your location or tell me your location."
+    
+    elif get_current_state(state_dict) == "LOVE_STATE":
+        love.controller(event, text)
+        return
+        
     elif get_current_state(state_dict) == "NORMAL_STATE":
         pass
     else:
@@ -114,13 +96,6 @@ def handle_message(event):
         
     try:
         reply_TextMsg(event.reply_token, reply_text)
-        
-        # reply_ImgCarouselTemplate(event.reply_token)
-        # imgCarTempMsg = send_img_car_template()
-        # line_bot_api.reply_message(
-        #     event.reply_token,
-        #     imgCarTempMsg
-        # )
     except Exception as e:
         print(e)
         
@@ -129,8 +104,6 @@ def handle_location(event):
     print("LOCATION")
     print(weatherAPI.location)
     print(weatherAPI.GET_LOCATION_INFO)
-    # print(event.message)
-    # if get_current_state(state_dict) == "WEATHER_STATE" and weatherAPI.location == None:
     if weatherAPI.GET_LOCATION_INFO and weatherAPI.location == None:
         print(weatherAPI.location)
         latitude = event.message.latitude
@@ -142,12 +115,12 @@ def handle_location(event):
             reply_TextMsg(event.reply_token, reply_text)
         else:
             token = event.reply_token
-            img_url = None
+            img_url = rand_select_img()
             title = "天氣小助手"
             description = f"妳的位置: {weatherAPI.location}"
             label_list = ["設定地點", "目前天氣", "天氣預報 (12小時)", "天氣預報 (5日)"]
             text_list = ["設定地點", "目前天氣", "天氣預報 (12小時)", "天氣預報 (5日)"]
-            reply_ButtonsTemplate(token, title, description, label_list, text_list)
+            reply_ButtonsTemplate(token, title, description, label_list, text_list, img_url)
             weatherAPI.GET_LOCATION_INFO = False
         
 

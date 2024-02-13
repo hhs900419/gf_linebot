@@ -2,7 +2,7 @@ import requests
 import os
 import sys
 from reply import *
-from utils import fahrenheit_to_celsius
+from utils import *
 
 API_KEY = "68IVLcGtC0DdWKbaaUQiT69lkI4YJHiF"
 
@@ -169,13 +169,13 @@ class WeatherAPI:
                 reply_TextMsg(event.reply_token, reply_text)
             elif return_val > 0:
                 token = event.reply_token
-                img_url = None
+                img_url = rand_select_img()
                 title = "天氣小助手"
                 description = f"妳的位置: {self.location}"
                 # description += f"location key: {self.location_key}"
                 label_list = ["設定地點", "目前天氣", "天氣預報 (12小時)", "天氣預報 (5日)"]
                 text_list = ["設定地點", "目前天氣", "天氣預報 (12小時)", "天氣預報 (5日)"]
-                reply_ButtonsTemplate(token, title, description, label_list, text_list)
+                reply_ButtonsTemplate(token, title, description, label_list, text_list, img_url)
                 self.GET_LOCATION_INFO = False
             else:
                 reply_text = f"錯誤! 請重新設定\n"
