@@ -118,7 +118,7 @@ class WeatherAPI:
         for data in daily_data:
             date = data["Date"].split("T")[0]
             # date = date.replace("-", "/")
-            date_object = datetime.strptime(str, '%Y-%m-%d')
+            date_object = datetime.strptime(date, '%Y-%m-%d')
             idx = date_object.weekday()
             weekday = self.weekdays[idx]
             min_temp = fahrenheit_to_celsius(data["Temperature"]["Minimum"]["Value"])
@@ -134,6 +134,7 @@ class WeatherAPI:
             msg += f"降雨機率：{perception_prob} %\n"
             msg += f"白天：{day_phrase}\n"
             msg += f"晚上：{night_phrase}\n\n"
+            print(msg)
             
             daily_forecast_msg += msg
         ref_link = response["Headline"]["MobileLink"]
