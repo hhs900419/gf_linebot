@@ -1,6 +1,8 @@
 import requests
 import os
 import sys
+import datetime
+from datetime import datetime
 from reply import *
 from utils import *
 
@@ -17,6 +19,7 @@ class WeatherAPI:
         self.country_code = "TW"
         self.language = "zh-tw"
         self.GET_LOCATION_INFO = False
+        self.weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         
         if self.api_key is None:
             print("Specify ACCUWEATHER_API_KEY as environment variable.")
@@ -114,7 +117,10 @@ class WeatherAPI:
         daily_forecast_msg = ""
         for data in daily_data:
             date = data["Date"].split("T")[0]
-            date = date.replace("-", "/")
+            # date = date.replace("-", "/")
+            date_object = datetime.strptime(str, '%Y-%m-%d')
+            idx = date_object.weekday()
+            weekday = self.weekdays[idx]
             min_temp = fahrenheit_to_celsius(data["Temperature"]["Minimum"]["Value"])
             max_temp = fahrenheit_to_celsius(data["Temperature"]["Maximum"]["Value"])
             perception_prob = data["Day"]["PrecipitationProbability"]
@@ -122,7 +128,7 @@ class WeatherAPI:
             night_phrase = data["Night"]["IconPhrase"]
             
             msg = ""
-            msg += f"{date}\n"
+            msg += f"{date}\t{weekday}\n"
             msg += f"最高溫：{max_temp} °C\n"
             msg += f"最低溫：{min_temp} °C\n"
             msg += f"降雨機率：{perception_prob} %\n"
@@ -205,4 +211,9 @@ class WeatherAPI:
             pass
         return
     
-    
+if __name__ == "__main__":
+    weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    str = "2024/2/28"
+    date_object = datetime.strptime(str, '%Y/%m/%d')
+    idx = date_object.weekday()
+    print(weekdays[idx])
