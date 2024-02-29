@@ -122,7 +122,10 @@ def handle_location(event):
             text_list = ["設定地點", "目前天氣", "天氣預報 (12小時)", "天氣預報 (5日)"]
             reply_ButtonsTemplate(token, title, description, label_list, text_list, img_url)
             weatherAPI.GET_LOCATION_INFO = False
-        
+
+@app.route("/", methods=['GET'])
+def get_request():
+    return "Recieved GET request!"
 
 if __name__ == "__main__":
     port = os.environ.get("PORT", 8000)
